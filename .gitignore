@@ -1,0 +1,25 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Local configuration and secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Large local assets
+models/
+datasets/
+*.ckpt
+*.pt
+*.safetensors
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store

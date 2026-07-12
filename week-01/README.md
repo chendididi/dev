@@ -1,82 +1,71 @@
 # 第 1 周：建立真实基线 | Week 1: Establish a Baseline
 
-本周不是考试，也不追求高分。目标是看清当前环境和能力缺口，然后只补最重要的一项。
+## 当前：第三步，完成第一个张量练习
 
-## 第一步：认识环境（已通过）
+目标：亲手理解张量的 `shape`、`dtype`、`device`，以及数据如何在 CPU 和 GPU 之间移动。
 
-预计用时：30-45 分钟。
+### 1. 补齐 NumPy
 
 在仓库根目录运行：
 
 ```bash
-bash tools/check-env.sh
+.venv/bin/python -m pip install numpy
 ```
 
-脚本只读取版本和硬件信息，不安装软件、不修改配置，也不上传任何数据。
+之前的警告是因为 PyTorch 支持与 NumPy 互相转换，但当前虚拟环境没有安装 NumPy。警告源码中的 `device="cpu"` 是 PyTorch 内部定义 `.cpu()` 转换方法，不代表你的测试张量位于 CPU；复跑已经确认测试张量实际位于 `cuda:0`。
 
-运行后，亲自填写 [REVIEW.md](REVIEW.md)。不需要复制所有输出，只记录：
+### 2. 自己创建练习文件
 
-- Python 与 Git 版本；
-- GPU 型号和显存；如果不可访问，则记录原始状态；
-- PyTorch 是否安装；
-- PyTorch 能否使用 CUDA；
-- 一项你看不懂或不确定的信息。
+创建 `week-01/tensor_exercise.py`，不要让 AI 生成实现。程序必须完成下面的要求：
 
-## 求助规则
+1. 创建 CPU `float32` 张量 `A`，形状为 `(2, 3)`，元素依次为 `1` 到 `6`。
+2. 创建 GPU `float32` 张量 `B`，形状为 `(3, 2)`，内容为 `[[1, 2], [3, 4], [5, 6]]`。
+3. 将 `A` 移到 GPU，命名为 `A_gpu`；保留原来的 CPU 张量 `A`。
+4. 在 GPU 上计算 `C = A_gpu @ B`。
+5. 分别打印 `A`、`A_gpu`、`B`、`C` 的 shape、dtype 和 device。
+6. 使用 `assert` 验证 `C` 的形状是 `(2, 2)`、设备类型是 `cuda`，数值为 `[[22, 28], [49, 64]]`。
+7. 将 `C` 移回 CPU 并转换成 NumPy 数组，打印数组及其 Python 类型。
 
-1. 先写下自己的理解，即使它可能不正确。
-2. 报错时保留完整错误信息和执行命令。
-3. 可以让 AI 解释概念、指出错误和审查答案，但不要让 AI 直接填写复盘。
-4. 通过这一步后，继续下面的第二步。
-
-## 第二步：PyTorch GPU 验证（当前）
-
-预计用时：30-60 分钟。下面命令在仓库根目录执行：
+运行命令：
 
 ```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install torch==2.13.0+cu130 --index-url https://download.pytorch.org/whl/cu130
+.venv/bin/python week-01/tensor_exercise.py
 ```
 
-这会把 PyTorch 安装在 `.venv/`，不会修改系统 Python。下载 CUDA 运行时需要较大的网络和磁盘空间；这是正常的。无需单独安装完整 CUDA Toolkit，也不需要 `nvcc`，因为 PyTorch wheel 已带有运行所需的 CUDA 组件。
+### 3. 验收
 
-安装完成后运行：
+- 程序正常退出，没有 NumPy 警告和断言失败。
+- `A` 的 device 是 `cpu`，`A_gpu`、`B`、`C` 的 device 是 `cuda:0`。
+- `C` 的结果是 `[[22, 28], [49, 64]]`。
+- NumPy 数组位于 CPU，并在 [REVIEW.md](REVIEW.md) 独立回答三个问题。
 
-```bash
-.venv/bin/python - <<'PY'
-import torch
+遇到问题时，保留命令和完整错误。可以让我解释报错或审查你的代码，但先自己完成第一次尝试。
 
-print("PyTorch:", torch.__version__)
-print("CUDA runtime:", torch.version.cuda)
-print("CUDA available:", torch.cuda.is_available())
+<details>
+<summary>已完成步骤 / Completed steps</summary>
 
-if torch.cuda.is_available():
-    print("GPU:", torch.cuda.get_device_name(0))
-    x = torch.tensor([1.0, 2.0], device="cuda")
-    print("GPU result:", (x * x).sum().item())
-PY
-```
+1. 环境检查：确认 Python 3.12.3、Git 2.43.0 和 RTX 3060 Laptop GPU 6 GiB。
+2. PyTorch GPU 验证：确认 PyTorch 2.13.0+cu130、CUDA 13.0、`cuda:0` 和 GPU 张量计算。
 
-期望看到 `CUDA available: True`、`NVIDIA GeForce RTX 3060 Laptop GPU` 和 `GPU result: 5.0`。将实际输出和一个疑问填入 [REVIEW.md](REVIEW.md)。若安装或验证失败，保留完整错误信息，不要自行尝试多个教程里的修复命令。
+</details>
 
 <details>
 <summary>English version</summary>
 
-This week is a baseline, not an exam. For the first step, run
-`bash tools/check-env.sh` from the repository root. The script only reads
-software and hardware information; it does not install or upload anything.
+## Current: Step 3, first tensor exercise
 
-Record the Python and Git versions, GPU model and memory (or the unavailable
-status), PyTorch availability, CUDA availability, and one unclear item in
-[REVIEW.md](REVIEW.md). Write your own explanation before asking AI for review.
-The first step has passed. For the current second step, create `.venv` and run
-the documented PyTorch GPU verification. Install `torch==2.13.0+cu130` from the
-official CUDA 13.0 wheel index. A full CUDA Toolkit or `nvcc` is not needed for
-this task because the PyTorch wheel includes its runtime components.
+Install NumPy with `.venv/bin/python -m pip install numpy`, then implement
+`week-01/tensor_exercise.py` yourself.
 
-The verification must report CUDA availability, the RTX 3060 device name, and
-the GPU result `5.0`. Record the real output and one question in
-[REVIEW.md](REVIEW.md); keep the complete error if it fails.
+Create CPU float32 tensor `A` with shape `(2, 3)` and values 1 through 6. Create
+GPU float32 tensor `B` with shape `(3, 2)` and values `[[1, 2], [3, 4], [5, 6]]`.
+Move `A` to the GPU as `A_gpu`, retain the original CPU tensor, and compute
+`C = A_gpu @ B` on the GPU.
+
+Print the shape, dtype, and device of all four tensors. Add assertions for the
+shape `(2, 2)`, CUDA device, and values `[[22, 28], [49, 64]]`. Move `C` back
+to the CPU, convert it to a NumPy array, and print the value and Python type.
+Run the file with `.venv/bin/python week-01/tensor_exercise.py`, then answer the
+three questions in [REVIEW.md](REVIEW.md).
 
 </details>

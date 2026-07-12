@@ -69,10 +69,52 @@ of installing every dependency into the system Python?
 
 ## 第二步：PyTorch GPU 验证 | Step 2: PyTorch GPU Verification
 
-- PyTorch 版本 / PyTorch version:
-- CUDA runtime / CUDA runtime:
-- CUDA 是否可用 / CUDA available:
-- GPU 名称 / GPU name:
-- GPU result:
-- 一个不理解的问题 / One unclear item:
+- PyTorch 版本 / PyTorch version:2.13.0+cu130
+- CUDA runtime / CUDA runtime:13.0
+- CUDA 是否可用 / CUDA available:true
+- GPU 名称 / GPUname:rtx3060 laptop GPU
+- GPU result:5.0
+- 一个不理解的问题 / One unclear item:/home/chendi2721/dev/.venv/lib/python3.12/site-packages/torch/_subclasses/functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))出现这个报错是为什么，为什么这里device又说是cpu？
+- 实际用时 / Time spent:1min
+
+### 第二步审查 / Step 2 Review
+
+结论：通过，2026-07-12。Codex 已在同一 `.venv` 中复跑并确认：
+
+- PyTorch `2.13.0+cu130`，CUDA runtime `13.0`；
+- `torch.cuda.is_available()` 为 `True`；
+- 实际设备为 `NVIDIA GeForce RTX 3060 Laptop GPU`，测试张量位于 `cuda:0`；
+- GPU 数值结果为 `5.0`，系统 Python 仍未安装 PyTorch。
+
+NumPy 警告不是 CUDA 失败。PyTorch 在导入时注册了张量转 CPU 和 NumPy 的转换能力，但虚拟环境缺少 NumPy；源码中的 `device="cpu"` 是转换方法的定义，不是测试张量的实际设备。
+
+## 第三步：第一个张量练习 | Step 3: First Tensor Exercise
+
+- NumPy 版本 / NumPy version:
+- 运行结果 / Program output:
 - 实际用时 / Time spent:
+
+### 问题 1
+
+调用 `A_gpu = A.to("cuda")` 后，原来的 `A` 在哪里？为什么要保留两个变量？
+
+After `A_gpu = A.to("cuda")`, where is the original `A`, and why keep two variables?
+
+我的回答 / My answer:
+
+### 问题 2
+
+为什么形状 `(2, 3)` 与 `(3, 2)` 的矩阵相乘后，结果形状是 `(2, 2)`？
+
+Why does multiplying matrices with shapes `(2, 3)` and `(3, 2)` produce `(2, 2)`?
+
+我的回答 / My answer:
+
+### 问题 3
+
+为什么 CUDA 张量需要先移到 CPU，才能转换为普通 NumPy 数组？
+
+Why must a CUDA tensor move to the CPU before conversion to a regular NumPy array?
+
+我的回答 / My answer:

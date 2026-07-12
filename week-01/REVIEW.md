@@ -91,9 +91,9 @@ NumPy 警告不是 CUDA 失败。PyTorch 在导入时注册了张量转 CPU 和 
 
 ## 第三步：第一个张量练习 | Step 3: First Tensor Exercise
 
-- NumPy 版本 / NumPy version:
-- 运行结果 / Program output:
-- 实际用时 / Time spent:
+- NumPy 版本 / NumPy version: 2.5.1
+- 运行结果 / Program output: 无警告、无断言失败；结果为 `[[22, 28], [49, 64]]`
+- 实际用时 / Time spent: 未记录 / Not recorded
 
 ### 问题 1
 
@@ -101,7 +101,7 @@ NumPy 警告不是 CUDA 失败。PyTorch 在导入时注册了张量转 CPU 和 
 
 After `A_gpu = A.to("cuda")`, where is the original `A`, and why keep two variables?
 
-我的回答 / My answer:
+我的回答 / My answer: `A.to("cuda")` 在跨设备时返回一个新的 GPU 张量，不会原地修改 `A`。因此 `A` 仍在 CPU，`A_gpu` 位于 GPU。保留两个变量可以明确比较设备转移前后的状态，也能继续使用原始 CPU 数据。
 
 ### 问题 2
 
@@ -109,7 +109,7 @@ After `A_gpu = A.to("cuda")`, where is the original `A`, and why keep two variab
 
 Why does multiplying matrices with shapes `(2, 3)` and `(3, 2)` produce `(2, 2)`?
 
-我的回答 / My answer:
+我的回答 / My answer: 矩阵乘法规则是 `(m, n) @ (n, p) -> (m, p)`。两个内部维度 `n` 必须相同，用于行和列的点积；结果保留两个外部维度 `m` 和 `p`。所以 `(2, 3) @ (3, 2)` 得到 `(2, 2)`。
 
 ### 问题 3
 
@@ -117,4 +117,16 @@ Why does multiplying matrices with shapes `(2, 3)` and `(3, 2)` produce `(2, 2)`
 
 Why must a CUDA tensor move to the CPU before conversion to a regular NumPy array?
 
-我的回答 / My answer:
+我的回答 / My answer: 普通 NumPy 数组使用 CPU 内存，不能直接读取 NVIDIA GPU 的 CUDA 显存，因此 CUDA 张量需要先调用 `.cpu()`，再转换为 NumPy 数组。
+
+### 第三步审查 / Step 3 Review
+
+结论：通过，2026-07-12。Codex 已复跑确认：
+
+- `A` 位于 CPU，`A_gpu`、`B`、`C` 位于 `cuda:0`；
+- 四个张量均为 `torch.float32`，shape 与设计一致；
+- GPU 矩阵乘法结果和断言正确；
+- `C` 已成功移回 CPU 并转换为 `numpy.ndarray`；
+- 运行过程没有 NumPy 警告。
+
+协作说明：初版代码和回答由学习者独立完成；最终代码格式、CUDA 失败检查和回答措辞由 Codex 根据学习者请求协助修改。此步骤证明学习者完成了首次实现和修订过程，不将 Codex 的文字润色计为独立能力。

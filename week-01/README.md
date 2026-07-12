@@ -1,6 +1,10 @@
 # 第 1 周：建立真实基线 | Week 1: Establish a Baseline
 
-## 当前：第三步，完成第一个张量练习
+## 状态：已通过
+
+第 1 周已于 2026-07-12 完成。下面保留第三步的任务规格，作为可复查的学习记录。
+
+## 第三步：完成第一个张量练习（已通过）
 
 目标：亲手理解张量的 `shape`、`dtype`、`device`，以及数据如何在 CPU 和 GPU 之间移动。
 
@@ -52,7 +56,12 @@
 <details>
 <summary>English version</summary>
 
-## Current: Step 3, first tensor exercise
+## Status: Passed
+
+Week 1 was completed on 2026-07-12. The task specification remains below as a
+reviewable learning record.
+
+## Step 3: First tensor exercise
 
 Install NumPy with `.venv/bin/python -m pip install numpy`, then implement
 `week-01/tensor_exercise.py` yourself.

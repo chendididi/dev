@@ -17,8 +17,12 @@ dev/
 ├── ROADMAP.md         # 路线：未来往哪里走
 ├── PROGRESS.md        # 进度：现在只做什么
 ├── week-01/
-│   ├── README.md      # 本周任务说明
-│   └── REVIEW.md      # 本周复盘，由我亲自填写
+│   ├── README.md      # 已完成：环境与第一个张量练习
+│   ├── REVIEW.md      # 第 1 周复盘
+│   └── tensor_exercise.py # 已通过的 CPU/GPU 张量练习
+├── week-02/
+│   ├── README.md      # 当前：张量形状与广播
+│   └── REVIEW.md      # 第 2 周复盘，由我亲自填写
 ├── python/
 │   └── 华为勇敢者学堂/
 │       └── test.py    # 已有的个人 Python 练习
@@ -30,7 +34,8 @@ dev/
 | 位置 | 什么时候看 |
 | --- | --- |
 | `PROGRESS.md` | 每次学习开始时，只看当前一步 |
-| `week-01/` | 现在使用，完成后再创建 `week-02/` |
+| `week-01/` | 已完成的基线、代码与复盘 |
+| `week-02/` | 当前任务，完成后再扩展下一步 |
 | `ROADMAP.md` | 每周复盘或需要确认方向时查看 |
 | `python/` | 保存我已经开始的个人练习 |
 | `tools/` | 需要检查环境时运行，不用背脚本内容 |
@@ -65,7 +70,8 @@ create future projects or study several tracks at the same time.
 - `README.md`: how to use the repository.
 - `ROADMAP.md`: the long-term direction.
 - `PROGRESS.md`: the one task currently in progress.
-- `week-01/`: this week's instructions and personal review.
+- `week-01/`: completed baseline code and review.
+- `week-02/`: the current tensor-shape task and personal review.
 - `python/`: existing personal Python practice.
 - `tools/check-env.sh`: a read-only environment check.
 - `.gitignore`: excludes local caches, secrets, and large assets from Git.

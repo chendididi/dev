@@ -1,39 +1,51 @@
-# 第 2 周：张量形状与广播 | Week 2: Tensor Shapes and Broadcasting
+# 第 2 周：模型基础 | Week 2: Model Foundations
 
-## 当前：第一步，理解 Transformer 常见维度
+## 当前：第二步，实现数值稳定的 softmax
 
-在大模型代码中，张量经常使用 `(batch, sequence, hidden)` 三个维度。当前任务只练习 shape 变化，不开始实现注意力。
+softmax 把一组 logits 转换为概率。朴素计算 `exp(x) / sum(exp(x))` 会在 logits 很大时溢出，因此实际实现需要先减去当前维度的最大值。
 
-创建 `week-02/shape_exercise.py`，由你独立完成。程序必须：
+创建 `week-02/softmax_exercise.py`，由你独立完成。程序必须：
 
-1. 在 GPU 创建 `float32` 张量 `x`，包含 `0` 到 `23`，并 reshape 为 `(2, 3, 4)`。依次把三个维度解释为 batch、sequence、hidden。
-2. 取出 `x[0, 1]`，断言其 shape 为 `(4,)`、数值为 `[4, 5, 6, 7]`。
-3. 使用转置得到 `x_transposed`，将 sequence 与 hidden 交换，断言 shape 为 `(2, 4, 3)`。
-4. 创建 GPU `float32` 向量 `bias = [0.1, 0.2, 0.3, 0.4]`，计算 `y = x + bias`，断言广播后的 shape 仍为 `(2, 3, 4)`。
-5. 创建 GPU `float32` 权重 `weight`，shape 为 `(4, 5)`；计算 `z = y @ weight`，断言 shape 为 `(2, 3, 5)`。
-6. 打印 `x`、切片、转置结果、`y`、`z` 的 shape、dtype 和 device；所有计算张量必须位于 `cuda:0`。
+1. 定义 `stable_softmax(x, dim=-1)`，不能调用 `torch.softmax` 或 `torch.nn.functional.softmax`。
+2. 只使用张量运算：沿 `dim` 找最大值并保留该维度，计算 `exp`，再除以沿同一维度的总和。
+3. 在 GPU 创建 `float32` logits：`[[1, 2, 3], [1000, 1001, 1002], [-1000, -1001, -1002]]`。
+4. 将你的结果与 `torch.softmax(logits, dim=-1)` 比较，使用 `torch.allclose` 断言一致。
+5. 断言输出 shape、dtype、device 与输入一致，每行概率和为 1，并且没有 NaN 或 Inf。
+6. 额外计算一次朴素版本 `exp(logits) / sum(exp(logits))`，打印它是否包含 NaN 或 Inf，用来观察溢出；不要用朴素版本作为最终结果。
+7. 验证平移不变性：`stable_softmax(logits + 5000)` 应与原结果一致。
+8. 使用 Ruff 格式化并检查代码，然后运行程序。
 
-运行命令：
+命令：
 
 ```bash
-.venv/bin/python week-02/shape_exercise.py
+.venv/bin/ruff format week-02/softmax_exercise.py
+.venv/bin/ruff check week-02/softmax_exercise.py
+.venv/bin/python week-02/softmax_exercise.py
 ```
 
-验收要求：程序无异常、所有断言通过，并在 [REVIEW.md](REVIEW.md) 独立回答三个问题。遇到错误时保留完整输出，先自己定位 shape，再请求帮助。
+完成后在 [REVIEW.md](REVIEW.md) 填写第二步。遇到错误时先记录是哪一个断言失败，以及对应 tensor 的 shape、dtype、device 和数值范围。
+
+<details>
+<summary>已完成步骤 / Completed steps</summary>
+
+第一步“张量形状与广播”已于 2026-07-14 通过：索引、转置、广播和批量矩阵乘法的 CUDA 断言均通过，Ruff 检查通过。
+
+</details>
 
 <details>
 <summary>English version</summary>
 
-## Current: Step 1, common Transformer dimensions
+## Current: Step 2, numerically stable softmax
 
-Implement `week-02/shape_exercise.py` yourself. Create CUDA float32 tensor `x`
-with values 0 through 23 and reshape it to `(2, 3, 4)`, representing batch,
-sequence, and hidden dimensions. Verify the slice `x[0, 1]`, transpose the
-sequence and hidden axes, add a `(4,)` bias through broadcasting, and multiply
-the result by a `(4, 5)` weight matrix.
+Implement `stable_softmax(x, dim=-1)` without calling PyTorch's softmax. Subtract
+the maximum value along `dim` while retaining that dimension, exponentiate,
+and divide by the sum along the same dimension.
 
-Assert the expected shapes `(4,)`, `(2, 4, 3)`, `(2, 3, 4)`, and `(2, 3, 5)`.
-Print shape, dtype, and device for each result. All computation tensors must be
-CUDA float32. Run the file and complete [REVIEW.md](REVIEW.md).
+Test CUDA float32 logits containing ordinary, very large positive, and very
+large negative values. Compare against `torch.softmax`, verify row sums and
+tensor metadata, reject NaN/Inf, demonstrate overflow in the naive formula,
+and verify that adding 5000 to every logit does not change the stable result.
+Format, lint, and run the file with the documented commands, then complete
+[REVIEW.md](REVIEW.md).
 
 </details>

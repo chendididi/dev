@@ -21,8 +21,9 @@ dev/
 │   ├── REVIEW.md      # 第 1 周复盘
 │   └── tensor_exercise.py # 已通过的 CPU/GPU 张量练习
 ├── week-02/
-│   ├── README.md      # 当前：张量形状与广播
-│   └── REVIEW.md      # 第 2 周复盘，由我亲自填写
+│   ├── README.md      # 当前：softmax 与数值稳定性
+│   ├── REVIEW.md      # 第 2 周复盘，由我亲自填写
+│   └── shape_exercise.py # 已通过的形状与广播练习
 ├── python/
 │   └── 华为勇敢者学堂/
 │       └── test.py    # 已有的个人 Python 练习
